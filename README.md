@@ -22,3 +22,35 @@
   - x0 = now()
   - x1 = add(x0, week=+1) and unset(x0, day)
   - x2 = set_days(x1, day=<休日全て>) := unset(x1, day) and set_day(x1, day=土, override=false) and set_day(x1, ...)
+
+# Python Version
+Python 3.4 or later are supported.
+
+# For Developers
+```
+$ pip install --editable .
+$ dominion
+```
+## tests
+```
+pyenv virtualenv -p python3.4 3.4.8 py34
+pyenv virtualenv -p python3.5 3.5.5 py35
+pyenv virtualenv -p python3.6 3.6.5 py36
+pyenv shell py34 py35 py36
+tox
+```
+
+## Emoji-prefix
+- :memo: when writing docs
+- :bug: when fixing a bug
+- :+1: when improving features
+- :tada: when adding features
+- :construction: work in progress
+- :recycle: when refactoring code
+- :shower: when removing code or files
+- :green_heart: when updating tests
+- :shirt: when removing linter warnings or fixing style guides
+- :rocket: when improving performance
+- :arrow_up: when upgrading dependencies
+- :arrow_down: when downgrading dependencies
+- :lock: when dealing with security
