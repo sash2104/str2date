@@ -24,3 +24,11 @@ class TestLexer(unittest.TestCase):
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0], "3")
         self.assertEqual(result[1], "2")
+
+    def test_lexer_numeric(self):
+        tokens = {"a": "1", "aa": "2", "aaa": "3"}
+        result = lx.lexer("12aa345aaa6789", tokens)
+        self.assertEqual(len(result), 5)
+        self.assertEqual(result[0], 12)
+        self.assertEqual(result[2], 345)
+        self.assertEqual(result[4], 6789)
