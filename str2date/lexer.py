@@ -60,6 +60,8 @@ def lexer(text, tokens):
             token_number *= 10
             token_number += d
             pos += 1
+            if pos >= len(text):
+                break
             c = text[pos]
         if is_numeric:
             result.append(int(token_number))
