@@ -40,6 +40,15 @@ pyenv shell py34 py35 py36
 tox
 ```
 
+# memo
+
+## token prefix
+- `a_`: ambiguous token (ex: `月`= `a_moon`, which is ambiguous between month and monday)
+- `d_`: datetime token (ex: `火曜日` = `d_tuesday`, `ゴールデンウィーク` = `d_goldenweek`)
+- `o_`: operational token (ex: `次` = `o_next`, `昨日` = `o_yesterday`)
+- `p_`: prefix token (ex: `平成` = `p_heisei`, `西暦` = `p_ad`)
+- `s_`: suffix token (ex: `年` = `s_year`, `週間` = `s_week`)
+
 ## Emoji-prefix
 - :memo: when writing docs
 - :bug: when fixing a bug
