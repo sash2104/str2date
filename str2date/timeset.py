@@ -139,9 +139,19 @@ class MonthTimeSet(BitTimeSet):
 
 
 class IntTimeSet(TimeSet):
-    """ intのlistで時間表現の集合を管理 """
-    def __init__(self):
+    """ intのlistで時間表現の集合を管理
+
+    Arguments
+    ---------
+    min_threshold: int or None
+        集合の要素の最小値. Noneの場合は最小値なし
+    max_threshold: int or None
+        集合の要素の最大値. Noneの場合は最大値なし
+    """
+    def __init__(self, min_threshold=None, max_threshold=None):
         self.timeset = []
+        self.min_threshold = min_threshold
+        self.max_threshold = max_threshold
 
     def add(self, n):
         self.timeset.append(n)
@@ -149,12 +159,38 @@ class IntTimeSet(TimeSet):
     def set(self, n):
         self.timeset = [n]
 
-    def shift(self, n):
+    def shift(self, n, max_threshold=None):
         """
-        IntTimeSetは最大値、最小値を持たないため回り込みも発生しない
+        max_thoresholdは, shiftの引数 -> IntTimeSetのメンバ変数の優先順位で参照する
+        どちらもNoneの場合は回り込みは発生しない.
+        そうでない場合、ずらした結果集合の要素の最大値・最小値を超えてしまった場合は回り込ませる.
+        timesetの最大値が5, shift前のtimesetの要素が3, nが4なら
+        shift後のtimesetの要素は(3+4)%5=2となる
+        min_thoresholdは, 現状shiftのみで挙動を変更させたい場合が思いつかないので引数に含めていない
+
+        Arguments
+        ---------
+        max_threshold: None or int
+            回り込ませる場合の最大値. Noneの場合は元の最大値を使用.
+            日数のように、最大31日あるが2月や9月のように28日や30日しかない月で、
+            最大値の31よりも小さい値で回り込ませたい場合に使用する.
         """
+        min_t = self.min_threshold
+        max_t = self.max_threshold if max_threshold is None else max_threshold
+        if max_t is None:
+            diff = min_t
+        else:
+            if min_t is None:
+                diff = max_t
+            else:
+                diff = max_t - min_t + 1
         for i in range(len(self.timeset)):
-            self.timeset[i] += n
+            if diff is None:
+                self.timeset[i] += n
+            elif n >= 0:
+                self.timeset[i] += (n % diff)
+            else:
+                self.timeset[i] -= abs(n) % diff
 
     def active(self):
         return self.timeset

@@ -69,3 +69,22 @@ class TestTimeSet(unittest.TestCase):
         self.assertEqual(len(target), 2)
         self.assertTrue(its.check(1))
         self.assertTrue(its.check(3))
+
+    def test_inttimeset_threshold(self):
+        its = IntTimeSet(min_threshold=1, max_threshold=3)
+        # 閾値以上の値をshiftさせると回り込む
+        its.set(1)
+        its.shift(3)
+        self.assertEqual(its.active(), [1])
+
+        # shiftの引数にmax_thresholdがあればそちらを優先して回り込む
+        its.shift(2, max_threshold=2)
+        self.assertEqual(its.active(), [1])
+        its.shift(3, max_threshold=2)
+        self.assertEqual(its.active(), [2])
+        its.shift(8, max_threshold=4)
+        self.assertEqual(its.active(), [2])
+        its.shift(-6, max_threshold=3)
+        self.assertEqual(its.active(), [2])
+        its.shift(-4, max_threshold=3)
+        self.assertEqual(its.active(), [1])
