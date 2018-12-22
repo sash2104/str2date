@@ -77,16 +77,39 @@ class BitSet:
         assert(1 <= n <= self.digit)
         self.bits = 1 << (n-1)
 
-    def shift(self, n):
+    def shift(self, n, wrap=True):
         """
-        circular shift
+        Arguments
+        ---------
+        n: int
+        wrap: bool
+            Trueならcircular shift, そうでないなら溢れた桁は消す
         """
         assert(-self.digit <= n <= self.digit)
-        if n > 0:
-            self.bits = ((self.bits << n)&self.mask) | (self.bits >> (self.digit-n))
-        elif n < 0:
-            self.bits = (self.bits >> -n) | ((self.bits << (self.digit+n))&self.mask)
+        if wrap:
+            " circular shift "
+            if n > 0:
+                self.bits = ((self.bits << n)&self.mask) | (self.bits >> (self.digit-n))
+            elif n < 0:
+                self.bits = (self.bits >> -n) | ((self.bits << (self.digit+n))&self.mask)
+        else:
+            if n > 0:
+                self.bits = ((self.bits << n)&self.mask)
+            elif n < 0:
+                self.bits = (self.bits >> -n)
         # if n == 0, do nothing
+
+    def set_all(self):
+        """
+        全ての桁を1にする
+        """
+        self.bits = self.mask
+
+    def reset(self):
+        """
+        全ての桁を0にする
+        """
+        self.bits = 0
 
     def get_nonzero_digits(self):
         """
