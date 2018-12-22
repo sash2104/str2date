@@ -12,6 +12,24 @@ class TestBitSet(unittest.TestCase):
         b.set(4)
         self.assertEqual(b.bits, 0b1000)
 
+    def test_reset(self):
+        b = BitSet(4)
+        b.set(1)
+        b.reset()
+        self.assertEqual(b.bits, 0)
+
+    def test_set_all(self):
+        # 全ての桁が立つ
+        b = BitSet(4)
+        b.set_all()
+        self.assertEqual(b.bits, 0b1111)
+
+        # どこかの桁が立っていても全ての桁が立つ
+        b = BitSet(4)
+        b.set(2)
+        b.set_all()
+        self.assertEqual(b.bits, 0b1111)
+
     def test_add(self):
         b = BitSet(4)
         b.add(1)
@@ -34,6 +52,28 @@ class TestBitSet(unittest.TestCase):
         b = BitSet(4)
         b.set(1)
         self.assertEqual(b.bits, 0b1)
+        b.shift(1, wrap=False)
+        self.assertEqual(b.bits, 0b10)
+        b.shift(2, wrap=False)
+        self.assertEqual(b.bits, 0b1000)
+        b.shift(1, wrap=False)
+        self.assertEqual(b.bits, 0)
+
+    def test_shift_right(self):
+        b = BitSet(4)
+        b.set(4)
+        self.assertEqual(b.bits, 0b1000)
+        b.shift(-1, wrap=False)
+        self.assertEqual(b.bits, 0b0100)
+        b.shift(-2, wrap=False)
+        self.assertEqual(b.bits, 0b0001)
+        b.shift(-1, wrap=False)
+        self.assertEqual(b.bits, 0)
+
+    def test_circular_shift_left(self):
+        b = BitSet(4)
+        b.set(1)
+        self.assertEqual(b.bits, 0b1)
         b.shift(1)
         self.assertEqual(b.bits, 0b10)
         b.shift(2)
@@ -41,7 +81,7 @@ class TestBitSet(unittest.TestCase):
         b.shift(1)
         self.assertEqual(b.bits, 0b0001)
 
-    def test_shift_right(self):
+    def test_circular_shift_right(self):
         b = BitSet(4)
         b.set(1)
         self.assertEqual(b.bits, 0b1)
@@ -65,6 +105,9 @@ class TestBitSet(unittest.TestCase):
         self.assertEqual(digit, 8)
 
     def test_get_nonzero_digits(self):
+        digits = _get_nonzero_digits(0)
+        self.assertEqual(digits, [])
+
         digits = _get_nonzero_digits(0b0001)
         self.assertEqual(digits, [1])
 
