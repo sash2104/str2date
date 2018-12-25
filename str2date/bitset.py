@@ -111,6 +111,14 @@ class BitSet:
         """
         self.bits = 0
 
+    def remove(self, n):
+        """
+        指定された桁を0にする
+        """
+        assert(0 < n <= self.digit)
+        mask = 1 << (n - 1)
+        self.bits &= ~mask
+
     def get_nonzero_digits(self):
         """
         0でない桁のリストを返す
