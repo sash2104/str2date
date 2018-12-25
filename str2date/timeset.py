@@ -91,7 +91,10 @@ class BitTimeSet(TimeSet):
     def set(self, n):
         self.timeset.set(n)
 
-    def shift(self, n, max_threshold=None):
+    def set_all(self):
+        self.timeset.set_all()
+
+    def shift(self, n, wrap=True, max_threshold=None):
         """
         ずらした結果集合の要素の最大値・最小値を超えてしまった場合は回り込ませる.
         timesetの最大値が5, shift前のtimesetの要素が3, nが4なら
@@ -99,19 +102,30 @@ class BitTimeSet(TimeSet):
 
         Arguments
         ---------
-        max_threshold: None or int
-            回り込ませる場合の最大値. Noneの場合は元の最大値を使用.
+        n: int
+        max_threshold: None or int, optional
+            集合の最大値. Noneの場合は元の最大値を使用.
             日数のように、最大31日あるが2月や9月のように28日や30日しかない月で、
-            最大値の31よりも小さい値で回り込ませたい場合に使用する.
+            最大値の31よりも小さい値を閾値としたい場合に使用する.
             NOTE: 現時点では未実装のためこの値は使用できない
+        wrap: bool, optional
+            Trueなら、ずらした結果集合の要素の最大値・最小値を超えてしまった場合に回り込ませる.
+            timesetの最大値が5, shift前のtimesetの要素が3, nが4なら
+            shift後のtimesetの要素は(3+4)%5=2となる
+            Falseなら、ずらした結果集合の要素の最大値・最小値を超えてしまった場合は超えた分は無視する.
+            timesetの最大値が5, shift前のtimesetの要素が3, nが4なら
+            shift後のtimesetの要素は(3+4)=7となり最大値を超えるのでtimesetの要素はなくなる
         """
-        self.timeset.shift(n)
+        self.timeset.shift(n, wrap=wrap)
 
     def active(self):
         return self.timeset.get_nonzero_digits()
 
     def check(self, n):
         return self.timeset.check(n)
+
+    def reset(self):
+        self.timeset.reset()
 
 
 class DayTimeSet(BitTimeSet):
