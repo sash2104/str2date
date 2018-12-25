@@ -127,6 +127,9 @@ class BitTimeSet(TimeSet):
     def reset(self):
         self.timeset.reset()
 
+    def remove(self, n):
+        self.timeset.remove(n)
+
 
 class DayTimeSet(BitTimeSet):
     """ 日付の集合 """
