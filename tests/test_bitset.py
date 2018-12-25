@@ -30,6 +30,20 @@ class TestBitSet(unittest.TestCase):
         b.set_all()
         self.assertEqual(b.bits, 0b1111)
 
+    def test_remove(self):
+        b = BitSet(4)
+        b.set_all()
+
+        # 指定した桁のみ0になる
+        b.remove(2)
+        self.assertEqual(b.bits, 0b1101)
+        b.remove(4)
+        self.assertEqual(b.bits, 0b101)
+
+        # すでに0の桁を指定しても0のまま
+        b.remove(2)
+        self.assertEqual(b.bits, 0b101)
+
     def test_add(self):
         b = BitSet(4)
         b.add(1)
