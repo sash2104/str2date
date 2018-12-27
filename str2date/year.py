@@ -198,11 +198,11 @@ class Year:
         s: datetime.datetime or None
             一番早い日
         """
-        active_days = self.active()
-        if len(active_days) == 0:
+        active_dates = self.active()
+        if len(active_dates) == 0:
             return None
         else:
-            return active_days[0]
+            return active_dates[0]
 
     def last(self):
         """
@@ -213,11 +213,11 @@ class Year:
         s: datetime.datetime or None
             一番早い日
         """
-        active_days = self.active()
-        if len(active_days) == 0:
+        active_dates = self.active()
+        if len(active_dates) == 0:
             return None
         else:
-            return active_days[-1]
+            return active_dates[-1]
 
     def check(self, year=None, month=None, day=None):
         """
