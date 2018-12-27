@@ -211,13 +211,53 @@ class Year:
         Returns
         -------
         s: datetime.datetime or None
-            一番早い日
+            一番遅い日
         """
         active_dates = self.active()
         if len(active_dates) == 0:
             return None
         else:
             return active_dates[-1]
+
+    def next(self, d):
+        """
+        日付集合の要素のうち`d`より後で一番早い日を返す
+
+        Arguments
+        ---------
+        d: datetime.dateetime
+            起点となる日
+
+        Returns
+        -------
+        s: datetime.datetime or None
+            一番早い日. なければNoneを返す
+        """
+        active_dates = self.active()
+        for date in active_dates:
+            if date > d:
+                return date
+        return None
+
+    def before(self, d):
+        """
+        日付集合の要素のうち`d`より前で一番遅い日を返す
+
+        Arguments
+        ---------
+        d: datetime.dateetime
+            起点となる日
+
+        Returns
+        -------
+        s: datetime.datetime or None
+            一番遅い日
+        """
+        active_dates = self.active()
+        for date in active_dates[::-1]:
+            if date < d:
+                return date
+        return None
 
     def check(self, year=None, month=None, day=None):
         """
