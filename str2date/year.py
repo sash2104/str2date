@@ -27,7 +27,9 @@ class Year:
         for m in range(1, 13):
             dim = dateutil.DAYS_IN_MONTH[m]
             # 閏年のために、2月はDAYS_IN_MONTHより1日多くしておく
-            self.months.append(BitTimeSet(dim + (m == 2)))
+            # self.months.append(BitTimeSet(dim + (m == 2)))
+            # 一旦は, 閏年はなかったことにする
+            self.months.append(BitTimeSet(dim))
         self.set(year=year, month=month, day=day)
 
     def add(self, month=None, day=None):
