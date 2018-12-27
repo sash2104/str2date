@@ -108,3 +108,47 @@ class TestYear(unittest.TestCase):
         self.assertTrue(y.check(month=2, day=1))
         self.assertTrue(y.check(month=1, day=2))
         self.assertTrue(y.check(month=12, day=31))
+
+    def test_first(self):
+        # 年のみ指定した場合
+        y = Year(2018)
+        d = y.first()
+        self.assertEqual(str(d.date()), "2018-01-01")
+
+        # 月を指定した場合
+        y = Year(2018, 2)
+        d = y.first()
+        self.assertEqual(str(d.date()), "2018-02-01")
+
+        # 月日を指定した場合
+        y = Year(2018, 2, 2)
+        d = y.first()
+        self.assertEqual(str(d.date()), "2018-02-02")
+
+        # 複数の日 (1/1, 2/2, 3/3) がある場合は一番早い日が返ってくる
+        y.add(month=1, day=1)
+        y.add(month=3, day=3)
+        d = y.first()
+        self.assertEqual(str(d.date()), "2018-01-01")
+
+    def test_last(self):
+        # 年のみ指定した場合
+        y = Year(2018)
+        d = y.last()
+        self.assertEqual(str(d.date()), "2018-12-31")
+
+        # 月を指定した場合
+        y = Year(2018, 2)
+        d = y.last()
+        self.assertEqual(str(d.date()), "2018-02-28")
+
+        # 月日を指定した場合
+        y = Year(2018, 2, 2)
+        d = y.last()
+        self.assertEqual(str(d.date()), "2018-02-02")
+
+        # 複数の日 (1/1, 2/2, 3/3) がある場合は一番早い日が返ってくる
+        y.add(month=1, day=1)
+        y.add(month=3, day=3)
+        d = y.last()
+        self.assertEqual(str(d.date()), "2018-03-03")
