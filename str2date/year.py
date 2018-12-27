@@ -189,6 +189,36 @@ class Year:
                 active_dates.append(datetime(self.year, m, d))
         return active_dates
 
+    def first(self):
+        """
+        日付集合の要素のうち一番早い日を返す
+
+        Returns
+        -------
+        s: datetime.datetime or None
+            一番早い日
+        """
+        active_days = self.active()
+        if len(active_days) == 0:
+            return None
+        else:
+            return active_days[0]
+
+    def last(self):
+        """
+        日付集合の要素のうち一番遅い日を返す
+
+        Returns
+        -------
+        s: datetime.datetime or None
+            一番早い日
+        """
+        active_days = self.active()
+        if len(active_days) == 0:
+            return None
+        else:
+            return active_days[-1]
+
     def check(self, year=None, month=None, day=None):
         """
         引数で与えられた値が集合に含まれていればTrue, そうでなければFalse
