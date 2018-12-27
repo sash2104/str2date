@@ -1,5 +1,6 @@
 import unittest
 
+from datetime import datetime
 from str2date.year import *
 
 class TestYear(unittest.TestCase):
@@ -152,3 +153,37 @@ class TestYear(unittest.TestCase):
         y.add(month=3, day=3)
         d = y.last()
         self.assertEqual(str(d.date()), "2018-03-03")
+
+    def test_next(self):
+        # 2018/1/1と2018/2/2の二日間を集合に加える
+        y = Year(2018, 1, 1)
+        y.set(2018, 2, 2)
+
+        # 2018/1/1の方が早いのでそちらが返る
+        d = y.next(datetime(2017, 1, 1))
+        self.assertEqual(str(d.date()), "2018-01-01")
+
+        # 日付が同じ場合はnextの対象から外れる
+        d = y.next(datetime(2018, 1, 1))
+        self.assertEqual(str(d.date()), "2018-02-02")
+
+        # nextの対象がないときはNoneが返る
+        d = y.next(datetime(2018, 2, 2))
+        self.assertIsNone(d)
+
+    def test_before(self):
+        # 2018/1/1と2018/2/2の二日間を集合に加える
+        y = Year(2018, 1, 1)
+        y.set(2018, 2, 2)
+
+        # 2018/2/2の方が遅いのでそちらが返る
+        d = y.before(datetime(2019, 1, 1))
+        self.assertEqual(str(d.date()), "2018-02-02")
+
+        # 日付が同じ場合はbeforeの対象から外れる
+        d = y.before(datetime(2018, 2, 2))
+        self.assertEqual(str(d.date()), "2018-01-01")
+
+        # beforeの対象がないときはNoneが返る
+        d = y.before(datetime(2018, 1, 1))
+        self.assertIsNone(d)
