@@ -7,7 +7,7 @@ from abc import ABCMeta, abstractmethod
 from datetime import datetime
 
 import str2date.dateutil as dateutil
-from str2date.timeset import *
+from str2date.bitset import *
 
 class Year:
     """
@@ -17,9 +17,9 @@ class Year:
     Properties
     ----------
     year: int
-    months: list of BitTimeSet
-        一ヶ月分の日付を一つのBitTimeSetで管理.
-        十二のBitTimeSetで一年分を表現する.
+    months: list of BitSet
+        一ヶ月分の日付を一つのBitSetで管理.
+        十二のBitSetで一年分を表現する.
     """
 
     def __init__(self, year, month=None, day=None):
@@ -27,9 +27,10 @@ class Year:
         for m in range(1, 13):
             dim = dateutil.DAYS_IN_MONTH[m]
             # 閏年のために、2月はDAYS_IN_MONTHより1日多くしておく
-            # self.months.append(BitTimeSet(dim + (m == 2)))
+            # self.months.append(BitSet(dim + (m == 2)))
             # 一旦は, 閏年はなかったことにする
-            self.months.append(BitTimeSet(dim))
+            # self.months.append(BitSet(dim))
+            self.months.append(BitSet(dim))
         self.set(year=year, month=month, day=day)
 
     def add(self, month=None, day=None):

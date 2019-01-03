@@ -121,6 +121,18 @@ class BitSet:
 
     def get_nonzero_digits(self):
         """
+        deprecated. activeを使う.
+        0でない桁のリストを返す
+
+        Returns
+        -------
+        digits: list of int
+            0でない桁のリスト
+        """
+        return _get_nonzero_digits(self.bits)
+
+    def active(self):
+        """
         0でない桁のリストを返す
 
         Returns
