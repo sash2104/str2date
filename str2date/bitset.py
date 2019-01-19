@@ -46,6 +46,47 @@ def _get_nonzero_digits(x):
     return digits
 
 
+def _copy(bitset_from, bitset_to, digit_from_start, digit_from_end, digit_to_start):
+    """
+    bitset_fromからbitset_toに指定された範囲のbitをコピーする
+    btset_toにコピーする際、あふれた桁は無視される
+
+    Parameters
+    ----------
+    bitset_from: BitSet
+    bitset_to: BitSet
+    digit_from_start: int
+        bitset_fromのコピーを開始する桁
+    digit_from_end: int
+        bitset_fromのコピーを終了する桁
+    digit_to_start: int
+        bitset_toのペーストを開始する桁
+    """
+
+    " (digit_from_start, digit_from_end) = (2, 4) なら 0b1110 "
+    mask = int(math.pow(2, digit_from_end)) - int(math.pow(2, digit_from_start-1))
+    bits = bitset_from.filter(mask)
+
+    n_shift = digit_from_start - digit_to_start
+    if n_shift > 0:
+        bits = (bits >> n_shift)
+        mask = (mask >> n_shift)
+    else:
+        bits = (bits << -n_shift)
+        bits &= bitset_to.mask
+        mask = (mask << -n_shift)
+        mask &= bitset_to.mask
+    to_bits = bitset_to.filter(mask)
+
+    " maskのある部分だけ0にする "
+    mask ^= bitset_to.mask
+    to_bits &= mask
+    to_bits |= bits
+
+    bitset_to.reset()
+    bitset_to.set_bits(to_bits)
+
+
 class BitSet:
     MAX_DIGIT = 64
     def __init__(self, digit):
@@ -130,6 +171,29 @@ class BitSet:
             0でない桁のリスト
         """
         return _get_nonzero_digits(self.bits)
+
+    def set_bits(self, bits):
+        """
+        self.bitsにbitsの1が立っている桁をコピーする
+
+        Parameters
+        ----------
+        mask: int
+            マスクビット. 値を取得したい桁に1を立てる
+        """
+        self.bits |= bits
+
+    def filter(self, mask):
+        """
+        self.bitsにマスクした結果を返す
+
+        Parameters
+        ----------
+        mask: int
+            マスクビット. 値を取得したい桁に1を立てる
+        """
+        assert(mask >= 0)
+        return mask & self.bits
 
     def active(self):
         """
