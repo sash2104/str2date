@@ -1,6 +1,6 @@
 import unittest
 
-from str2date.bitset import BitSet, _trailing_digit, _get_nonzero_digits
+from str2date.bitset import BitSet, _trailing_digit, _get_nonzero_digits, _copy
 
 class TestBitSet(unittest.TestCase):
     def test_set(self):
@@ -61,6 +61,23 @@ class TestBitSet(unittest.TestCase):
         b.add(2)
         self.assertTrue(b.check(1))
         self.assertTrue(b.check(2))
+
+    def test_set_bits(self):
+        b = BitSet(4)
+        b.set(1)
+        b.set_bits(0b0110)
+        self.assertEqual(b.bits, 0b0111)
+        b.set_bits(0b1100)
+        self.assertEqual(b.bits, 0b1111)
+
+    def test_filter(self):
+        b = BitSet(4)
+        b.add(2)
+        b.add(4)
+        self.assertEqual(b.bits, 0b1010)
+
+        bits = b.filter(0b0110)
+        self.assertEqual(bits, 0b0010)
 
     def test_shift_left(self):
         b = BitSet(4)
@@ -139,3 +156,24 @@ class TestBitSet(unittest.TestCase):
 
         digits = _get_nonzero_digits(0b10000000)
         self.assertEqual(digits, [8])
+
+    def test_copy(self):
+        b_from = BitSet(3)
+        b_from.add(2)
+        b_from.add(3)
+        self.assertEqual(b_from.bits, 0b110)
+
+        b_to = BitSet(3)
+        self.assertEqual(b_to.bits, 0)
+
+        " 指定した範囲のコピーがうまくいく "
+        _copy(b_from, b_to, 1, 2, 1)
+        self.assertEqual(b_to.bits, 0b010)
+
+        " 値は上書きされる "
+        _copy(b_from, b_to, 1, 2, 2)
+        self.assertEqual(b_to.bits, 0b100)
+
+        " 桁あふれは無視される "
+        _copy(b_from, b_to, 2, 3, 3)
+        self.assertEqual(b_to.bits, 0b100)
