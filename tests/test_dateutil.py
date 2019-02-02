@@ -40,3 +40,28 @@ class TestDateUtil(unittest.TestCase):
         for m, d, doy in _doy_leap_year:
             target = doy_to_monthday(doy, 2000)
             self.assertEqual(target, (m, d))
+
+    def test_shift_days(self):
+        # common year
+        y, m, d = shift_days(2001, 2, 28, 1)
+        self.assertEqual((2001, 3, 1), (y, m, d))
+        y, m, d = shift_days(2001, 3, 1, -1)
+        self.assertEqual((2001, 2, 28), (y, m, d))
+
+        # leap year
+        y, m, d = shift_days(2000, 2, 28, 1)
+        self.assertEqual((2000, 2, 29), (y, m, d))
+        y, m, d = shift_days(2000, 3, 1, -1)
+        self.assertEqual((2000, 2, 29), (y, m, d))
+
+        # 月を跨ぐ場合
+        y, m, d = shift_days(2019, 1, 1, 100)
+        self.assertEqual((2019, 4, 11), (y, m, d))
+        y, m, d = shift_days(2019, 12, 31, -100)
+        self.assertEqual((2019, 9, 22), (y, m, d))
+
+        # 年を跨ぐ場合
+        y, m, d = shift_days(2019, 1, 1, 1000)
+        self.assertEqual((2021, 9, 27), (y, m, d))
+        y, m, d = shift_days(2019, 12, 31, -1000)
+        self.assertEqual((2017, 4, 5), (y, m, d))
