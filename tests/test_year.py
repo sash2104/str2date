@@ -187,3 +187,73 @@ class TestYear(unittest.TestCase):
         # beforeの対象がないときはNoneが返る
         d = y.before(datetime(2018, 1, 1))
         self.assertIsNone(d)
+
+    def test_active(self):
+        " common day "
+        y = Year(2020, 2, 28)
+        dates = y.active()
+        self.assertEqual(len(dates), 1)
+        self.assertEqual((dates[0].year, dates[0].month, dates[0].day), (2020, 2, 28))
+
+        " leap day "
+        y = Year(2020, 2, 29)
+        dates = y.active()
+        self.assertEqual(len(dates), 1)
+        self.assertEqual((dates[0].year, dates[0].month, dates[0].day), (2020, 2, 29))
+
+        " multiple days "
+        y = Year(2020, 1, 1)
+        y.add(month=12, day=31)
+        dates = y.active()
+        self.assertEqual(len(dates), 2)
+        self.assertEqual((dates[0].year, dates[0].month, dates[0].day), (2020, 1, 1))
+        self.assertEqual((dates[1].year, dates[1].month, dates[1].day), (2020, 12, 31))
+
+    def test_shift(self):
+        y = Year(2018, 1, 1)
+        y.shift(day=1)
+        dates = y.active()
+        self.assertEqual(len(dates), 1)
+        self.assertEqual((dates[0].year, dates[0].month, dates[0].day), (2018, 1, 2))
+
+        y = Year(2018, 1, 1)
+        y.shift(day=30)
+        dates = y.active()
+        self.assertEqual(len(dates), 1)
+        self.assertEqual((dates[0].year, dates[0].month, dates[0].day), (2018, 1, 31))
+
+        " common year "
+        y = Year(2018, 2, 28)
+        y.shift(day=1)
+        dates = y.active()
+        self.assertEqual(len(dates), 1)
+        self.assertEqual((dates[0].year, dates[0].month, dates[0].day), (2018, 3, 1))
+
+        " leap year "
+        y = Year(2020, 2, 28)
+        y.shift(day=1)
+        dates = y.active()
+        self.assertEqual(len(dates), 1)
+        self.assertEqual((dates[0].year, dates[0].month, dates[0].day), (2020, 2, 29))
+
+        " 月を跨ぐ場合 "
+        y = Year(2018, 1, 1)
+        y.shift(day=364)
+        dates = y.active()
+        self.assertEqual(len(dates), 1)
+        self.assertEqual((dates[0].year, dates[0].month, dates[0].day), (2018, 12, 31))
+
+        " 境界値. あふれた分はなくなる "
+        y = Year(2018, 12, 31)
+        y.shift(day=1)
+        dates = y.active()
+        self.assertEqual(len(dates), 0)
+
+        " multiple shifts."
+        y = Year(2018, 1, 1)
+        y.add(month=3, day=31)
+        y.shift(day=1)
+        dates = y.active()
+        self.assertEqual(len(dates), 2)
+        self.assertEqual((dates[0].year, dates[0].month, dates[0].day), (2018, 1, 2))
+        self.assertEqual((dates[1].year, dates[1].month, dates[1].day), (2018, 4, 1))
