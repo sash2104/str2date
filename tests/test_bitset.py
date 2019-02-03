@@ -1,6 +1,6 @@
 import unittest
 
-from str2date.bitset import BitSet, _trailing_digit, _get_nonzero_digits, _copy
+from str2date.bitset import BitSet, _trailing_digit, _get_nonzero_digits, copy
 
 class TestBitSet(unittest.TestCase):
     def test_set(self):
@@ -167,13 +167,21 @@ class TestBitSet(unittest.TestCase):
         self.assertEqual(b_to.bits, 0)
 
         " 指定した範囲のコピーがうまくいく "
-        _copy(b_from, b_to, 1, 2, 1)
+        copy(b_from, b_to, 1, 2, 1)
         self.assertEqual(b_to.bits, 0b010)
 
         " 値は上書きされる "
-        _copy(b_from, b_to, 1, 2, 2)
+        copy(b_from, b_to, 1, 2, 2)
         self.assertEqual(b_to.bits, 0b100)
 
         " 桁あふれは無視される "
-        _copy(b_from, b_to, 2, 3, 3)
+        copy(b_from, b_to, 2, 3, 3)
         self.assertEqual(b_to.bits, 0b100)
+
+        " 範囲外の値は保持される "
+        copy(b_from, b_to, 2, 3, 1)
+        self.assertEqual(b_to.bits, 0b111)
+
+        " 同じBitSet同士のcopyもうまくいく "
+        copy(b_from, b_from, 2, 3, 1)
+        self.assertEqual(b_from.bits, 0b111)
