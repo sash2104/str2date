@@ -46,7 +46,7 @@ def _get_nonzero_digits(x):
     return digits
 
 
-def _copy(bitset_from, bitset_to, digit_from_start, digit_from_end, digit_to_start):
+def copy(bitset_from, bitset_to, digit_from_start, digit_from_end, digit_to_start):
     """
     bitset_fromからbitset_toに指定された範囲のbitをコピーする
     btset_toにコピーする際、あふれた桁は無視される
@@ -76,7 +76,7 @@ def _copy(bitset_from, bitset_to, digit_from_start, digit_from_end, digit_to_sta
         bits &= bitset_to.mask
         mask = (mask << -n_shift)
         mask &= bitset_to.mask
-    to_bits = bitset_to.filter(mask)
+    to_bits = bitset_to.bits
 
     " maskのある部分だけ0にする "
     mask ^= bitset_to.mask
