@@ -7,12 +7,11 @@ from abc import ABCMeta, abstractmethod
 from datetime import datetime
 
 import str2date.dateutil as dateutil
-from str2date.bitset import *
+import str2date.bitset as bitset
 
 class Year:
     """
     一年分の日付の集合を管理.
-    とりあえずはshiftは棚上げ. 閏年も気にしない.
 
     Properties
     ----------
@@ -25,12 +24,8 @@ class Year:
     def __init__(self, year, month=None, day=None):
         self.months = [None] # None is a placeholder for indexing purposes.
         for m in range(1, 13):
-            dim = dateutil.DAYS_IN_MONTH[m]
-            # 閏年のために、2月はDAYS_IN_MONTHより1日多くしておく
-            # self.months.append(BitSet(dim + (m == 2)))
-            # 一旦は, 閏年はなかったことにする
-            # self.months.append(BitSet(dim))
-            self.months.append(BitSet(dim))
+            dim = dateutil.days_in_month(year, m)
+            self.months.append(bitset.BitSet(dim))
         self.set(year=year, month=month, day=day)
 
     def add(self, month=None, day=None):
@@ -162,6 +157,7 @@ class Year:
         特定の時間集合の要素を引数で与えられた値だけずらす.
         集合の要素の最大値・最小値が存在し、ずらした結果閾値を超えてしまった場合、
         回り込ませるかは継承先のクラス毎に異なる
+        TODO: とりあえずはyearとmonthは無視し、day >= 0を仮定する
 
         Arguments
         ---------
@@ -170,7 +166,32 @@ class Year:
         day: int
         """
         assert (year is not None) or (month is not None) or (day is not None), "At least an argument must be given"
-        pass
+        for m in range(12, 0, -1):
+            y_last, m_last, d_last = dateutil.shift_days(self.year, m, dateutil.days_in_month(self.year, m), -day)
+            if y_last < self.year:
+                self.months[m].reset()
+                continue
+            y_first, m_first, d_first = dateutil.shift_days(self.year, m, 1, -day)
+            if y_first < y_last:
+                " 月の初日 + 月末との差分の日数. "
+                d_to = 1 + (dateutil.days_in_month(y_first, m_first) - d_first + 1)
+                if m == 1:
+                    " 1月の場合、bitset.copyだけだとcopy元の値を消せないのでshiftでずらす "
+                    self.months[1].shift(d_to-1, wrap=False)
+                else:
+                    bitset.copy(self.months[1], self.months[m], 1, d_last, d_to)
+                continue
+            d_to = 1
+            copy_list = []
+            while m_first < m_last:
+                copy_list.append((m_first, m, d_first, dateutil.days_in_month(y_first, m_first), d_to))
+                d_to += dateutil.days_in_month(y_first, m_first) - d_first + 1
+                m_first += 1
+                d_first = 1
+            copy_list.append((m_first, m, d_first, d_last, d_to))
+            while len(copy_list) > 0:
+                x = copy_list.pop()
+                bitset.copy(self.months[x[0]], self.months[x[1]], x[2], x[3], x[4])
 
     def active(self):
         """
